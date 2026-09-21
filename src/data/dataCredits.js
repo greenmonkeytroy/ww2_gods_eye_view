@@ -175,6 +175,20 @@ export const DATA_CREDITS = [
       '<a href="https://www.submarinecablemap.com" target="_blank" rel="noopener">submarinecablemap.com</a> ' +
       '(CC BY-NC-SA 3.0 — NonCommercial)',
   },
+  {
+    key: 'ww2-naval',
+    html:
+      'WW2 naval battles: dates and coordinates compiled from ' +
+      '<a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License" target="_blank" rel="noopener">Wikipedia</a> ' +
+      'infoboxes (original summaries, public domain compilation)',
+  },
+  {
+    key: 'ww2-country-labels',
+    html:
+      'WW2 country labels: era names and statuses compiled from ' +
+      '<a href="https://en.wikipedia.org/wiki/List_of_sovereign_states_in_the_1940s" target="_blank" rel="noopener">Wikipedia</a> ' +
+      'and general historical sources (original compilation of facts)',
+  },
 ];
 
 /**

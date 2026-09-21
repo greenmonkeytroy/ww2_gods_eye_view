@@ -176,6 +176,17 @@ const LAYER_ALIASES = new Map([
   ['firms', 'local-firms'],
   ['fires', 'local-firms'],
   ['active fires', 'local-firms'],
+  ['ww2 naval battles', 'local-ww2-naval'],
+  ['world war 2 naval battles', 'local-ww2-naval'],
+  ['world war two naval battles', 'local-ww2-naval'],
+  ['naval battles', 'local-ww2-naval'],
+  ['ww2 battles', 'local-ww2-naval'],
+  ['country labels', 'ww2-country-labels'],
+  ['country names', 'ww2-country-labels'],
+  ['ww2 countries', 'ww2-country-labels'],
+  ['ww2 country labels', 'ww2-country-labels'],
+  ['historical countries', 'ww2-country-labels'],
+  ['historical country names', 'ww2-country-labels'],
 ]);
 
 const CITY_ALIASES = new Map([
@@ -3273,6 +3284,7 @@ function layerTitle(layerId) {
   if (layerId === 'local-dams') return 'Dam';
   if (layerId === 'telegeography-submarine-cables') return 'Submarine Cable';
   if (layerId === 'local-firms') return 'Active Fire';
+  if (layerId === 'local-ww2-naval') return 'WW2 Naval Battle';
   return layerId || 'Entity';
 }
 

@@ -179,6 +179,8 @@ const CREDIT_EXPECTATIONS = {
   'telegeography-submarine-cables': /TeleGeography/i,
   'local-neighborhoods': /DataSF|San Francisco/i,
   'weather-effects': /Open-Meteo/i,
+  'local-ww2-naval': /Wikipedia/i,
+  'ww2-country-labels': /country labels/i,
 };
 
 /**

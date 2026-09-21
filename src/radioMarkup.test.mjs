@@ -154,14 +154,32 @@ test('the edited existing tools changed exactly as intended', () => {
   const location = byName.get('fly_to_location');
   assert.equal(location.parameters.properties.waitForArrival.type, 'boolean');
   assert.match(location.parameters.properties.waitForArrival.description, /arrived=true/);
+
+  // Edit 4: the WW2 Naval Battles layer joins the three layer-id enums.
+  const setVisibility = byName.get('set_layer_visibility');
+  assert.ok(setVisibility.parameters.properties.layerId.enum.includes('local-ww2-naval'));
+  assert.match(setVisibility.parameters.properties.layerId.description, /local-ww2-naval/);
+  const menu = byName.get('show_data_layers_menu');
+  assert.ok(menu.parameters.properties.layerId.enum.includes('local-ww2-naval'));
+  const entityContext = byName.get('get_entity_context');
+  assert.ok(entityContext.parameters.properties.layerId.enum.includes('local-ww2-naval'));
+
+  // Edit 5: WW2 Country Labels is a toggle target only — its labels are not
+  // selectable entities, so it stays out of get_entity_context.
+  assert.ok(setVisibility.parameters.properties.layerId.enum.includes('ww2-country-labels'));
+  assert.match(setVisibility.parameters.properties.layerId.description, /ww2-country-labels/);
+  assert.ok(menu.parameters.properties.layerId.enum.includes('ww2-country-labels'));
+  assert.ok(!entityContext.parameters.properties.layerId.enum.includes('ww2-country-labels'));
 });
 
 test('no unchanged Realtime tool definition drifts silently', () => {
-  // Context/Cockpit parity, the dependent-location wait edit, and the retired
-  // `bing-road` stack leaving `set_map_stack`'s enum are the known schema
-  // changes. Everything else must be byte-identical: an unnoticed edit
-  // to a shipped tool changes
-  // model behavior in production with nothing in review to catch it.
+  // Context/Cockpit parity, the dependent-location wait edit, the retired
+  // `bing-road` stack leaving `set_map_stack`'s enum, and the WW2 Naval
+  // Battles layer joining set_layer_visibility/show_data_layers_menu/
+  // get_entity_context's enums are the known schema changes. Everything
+  // else must be byte-identical: an unnoticed edit to a shipped tool
+  // changes model behavior in production with nothing in review to catch
+  // it.
   //
   // If this fails and the change was deliberate, re-derive the digest and say
   // in the mic-test brief which tools moved — the session cache busts on any
@@ -174,16 +192,19 @@ test('no unchanged Realtime tool definition drifts silently', () => {
     'fly_to_location',
     'select_nearest_aircraft',
     'set_map_stack',
+    'set_layer_visibility',
+    'show_data_layers_menu',
+    'get_entity_context',
   ]);
   const unchanged = realtimeTools()
     .filter((tool) => !TOUCHED.has(tool.name))
     .sort((a, b) => a.name.localeCompare(b.name));
-  assert.equal(unchanged.length, 21);
+  assert.equal(unchanged.length, 18);
   const digest = createHash('sha256')
     .update(JSON.stringify(unchanged))
     .digest('hex')
     .slice(0, 16);
-  assert.equal(digest, '802ed694b8887b88', 'an unchanged Realtime tool definition drifted');
+  assert.equal(digest, '0e2cf4e4687f797b', 'an unchanged Realtime tool definition drifted');
 });
 
 test('Radio volume and mission speed share the Sharpen slider visual language', () => {

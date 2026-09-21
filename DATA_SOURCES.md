@@ -65,6 +65,8 @@ Static datasets shipped in the repo for an out-of-the-box experience. **None are
 | **TeleGeography Submarine Cable Map** (712 cables + 1,917 landing points) | `telegeography_submarine_cables/` | **CC BY-NC-SA 3.0** | ❌ **NonCommercial — remove for commercial use** | "© TeleGeography — submarinecablemap.com" |
 | **Natural Earth physical regions** (1,046 land + 292 marine named polygons) | `natural_earth/` | **Public domain** | ✅ (no restrictions) | "Made with Natural Earth" (courtesy credit — not legally required) |
 | **DataSF Analysis Neighborhoods** (41 SF neighborhood polygons) | `neighborhoods/` | **PDDL 1.0** (public domain) | ✅ (no restrictions) | "City & County of San Francisco — DataSF" (courtesy — not legally required) |
+| **WW2 Naval Battles** (25 major engagements, 1939-1945) | `ww2Naval/` | **Public domain** (original compilation of historical facts) | ✅ (no restrictions) | "Wikipedia" (courtesy — dates/coordinates cross-checked against article infoboxes; descriptions are original text) |
+| **WW2 Country Labels** (153 era-dated label points, 1939-1945) | `ww2Countries/` | **Public domain** (original compilation of historical facts) | ✅ (no restrictions) | "Wikipedia" and general historical sources (courtesy — names/dates checked against fetched articles where noted in the folder README) |
 
 ### ⚠️ TeleGeography is bundled but NonCommercial
 
@@ -124,6 +126,28 @@ is legally required; we note the source here and in the folder's `SOURCE.md`, wh
 the retrieval date (2026-07-30), exact download URL, license evidence, and the
 deterministic transform (`scripts/build-sf-neighborhoods.mjs`: `nhood` → `name`, ~2 m
 Douglas-Peucker simplification, 6-decimal rounding).
+
+### WW2 Naval Battles (`ww2Naval/`)
+
+`ww2Naval/ww2-naval-battles.geojsonl` bundles 25 major World War II naval engagements
+(Atlantic, Mediterranean, Arctic, and Pacific theaters) as point features. Dates and
+coordinates were checked individually against each battle's English Wikipedia infobox;
+the `description` field on each feature is an original summary, not copied article text.
+See the folder's `README.md` for the full sourcing note, the `coordinates_approximate`
+flag semantics, and deliberately out-of-scope follow-up work (front lines, convoy routes
+as lines, a time-scrubber UI).
+
+### WW2 Country Labels (`ww2Countries/`)
+
+`ww2Countries/labels.js` is a hand-built dataset of 153 label points, each with dated
+periods giving the English name and short political status in force in 1939-1945
+(Protectorate of Bohemia and Moravia, Vichy France, Ostmark, Netherlands East Indies,
+and so on). The layer offers five snapshot dates as chips on its panel row. Names,
+statuses and transition dates were checked against the English Wikipedia lists of
+sovereign states in the 1930s/1940s and the individual articles named in the folder's
+`README.md`, which also lists the facts that were compiled from general knowledge and
+not confirmed against a fetched page. No Wikipedia text is reproduced. Points are label
+anchors, not borders.
 
 ---
 

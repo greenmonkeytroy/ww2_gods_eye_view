@@ -90,6 +90,11 @@ export function localInfrastructureOverlayCopy(properties, layerId) {
     if (river && river.toLocaleLowerCase() !== title.toLocaleLowerCase()) {
       details.push(clampCardLine(river));
     }
+  } else if (layerId === 'local-ww2-naval') {
+    const dateLabel = firstClean([props.date_label]);
+    if (dateLabel) details.push(clampCardLine(dateLabel));
+    const outcome = firstClean([props.outcome]);
+    if (outcome) details.push(clampCardLine(outcome));
   }
 
   return { title, details };
@@ -888,5 +893,6 @@ function clampCardLine(value) {
 function layerTitle(layerId) {
   if (layerId === 'local-datacenters') return 'Datacenter';
   if (layerId === 'local-dams') return 'Dam';
+  if (layerId === 'local-ww2-naval') return 'Naval Battle';
   return 'Feature';
 }

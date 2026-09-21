@@ -1,10 +1,12 @@
 import { createLocalGeoJsonLayer } from './localGeojson.js';
 import { createFirmsHeatmapLayer } from './firmsHeatmap.js';
 import submarineCablesLayer from './telegeographySubmarineCables.js';
+import ww2CountryLabelsLayer from './ww2CountryLabels.js';
 
 // Use Vite's ?url import to properly resolve these assets in dev and build
 import datacentersUrl from './local_data/datacenters/datacenters.geojsonl?url';
 import damsUrl from './local_data/dams/dams.geojsonl?url';
+import ww2NavalUrl from './local_data/ww2Naval/ww2-naval-battles.geojsonl?url';
 
 /**
  * Registry of local GeoJSON datasets.
@@ -44,9 +46,23 @@ const fires = createFirmsHeatmapLayer({
   source: 'NASA FIRMS · LIVE',
 });
 
+const ww2Naval = createLocalGeoJsonLayer({
+  id: 'local-ww2-naval',
+  url: ww2NavalUrl,
+  name: 'WW2 Naval Battles',
+  color: '#ff9f43', // Amber
+  icon: '⚓',
+  source: 'Wikipedia',
+  labels: true,
+  labelMax: 40,
+  labelGridPx: 132,
+});
+
 export default [
   datacenters,
   dams,
   submarineCablesLayer,
   fires,
+  ww2Naval,
+  ww2CountryLabelsLayer,
 ];
