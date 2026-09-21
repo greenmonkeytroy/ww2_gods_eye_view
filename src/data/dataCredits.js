@@ -1,4 +1,5 @@
 import * as Cesium from 'cesium';
+import { creditsForPeriod } from '../period.js';
 
 /**
  * Per-layer data attribution registered into Cesium's credit display.
@@ -239,9 +240,11 @@ export function registerDynamicCredit(viewer, credit) {
 }
 
 /**
- * Register every per-layer data credit into the viewer's credit display.
- * Idempotent: safe to call once at init. Credits are static and always
- * present in the "Data attribution" popover.
+ * Register the data credits into the viewer's credit display. Idempotent:
+ * safe to call once at init. Credits are static and always present in the
+ * "Data attribution" popover. The period build lists only the credits for data
+ * it still draws (src/period.js); the full list stays in DATA_CREDITS so the
+ * modern layers keep their attribution if they are ever switched back on.
  * @param {Cesium.Viewer} viewer — the initialized Cesium viewer
  */
 export function registerDataCredits(viewer) {
@@ -249,7 +252,7 @@ export function registerDataCredits(viewer) {
   if (!creditDisplay || typeof creditDisplay.addStaticCredit !== 'function') {
     return;
   }
-  for (const { html } of DATA_CREDITS) {
+  for (const { html } of creditsForPeriod(DATA_CREDITS)) {
     // showOnScreen=false → lives in the expandable "Data attribution" popover,
     // not the on-globe credit line.
     creditDisplay.addStaticCredit(new Cesium.Credit(html, false));

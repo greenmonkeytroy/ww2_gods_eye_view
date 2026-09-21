@@ -2,6 +2,8 @@
 
 God's Eye View's **code** is [MIT](LICENSE)-licensed. **The MIT grant covers the source code only — it does NOT extend to third-party data or visual assets.** Every third-party source keeps its own license and terms. This file documents the live and bundled data sources; bundled 3D-model provenance is recorded in [`public/models/README.md`](public/models/README.md).
 
+**Period build (1939-1945).** This fork loads and displays only the WW2 datasets (see the "WW2 ..." rows and sections below), the terrain/basemap providers, and the optional Google Maps, Cesium ion and OpenAI services. Every other live or bundled source in this file is documented because its code is still on disk, dormant (`src/period.js`), but it is **not fetched, drawn or credited in-app** in this build. Their attribution is listed here for anyone who switches them back on.
+
 How to read this:
 
 - **The non-permissive datasets are carved out, not omitted.** Some bundled data (e.g. TeleGeography, CC BY-NC-SA) isn't MIT-compatible. Rather than hide it, we **bundle it with a clear license carve-out** so the app works out of the box — but it stays under the provider's terms.

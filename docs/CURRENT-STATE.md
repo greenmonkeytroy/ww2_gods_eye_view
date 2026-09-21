@@ -1,3 +1,9 @@
+> **1939-1945 fork note.** This is the upstream runtime reference and it still describes the
+> original present-day app. In this fork the live data layers, cockpit/contacts/space-mission UI,
+> CCTV, radio, most visual styles and the spy-satellite HUD copy are switched off by `WW2_ONLY` in
+> `src/period.js`, and the HUD was rewritten in place as a war-atlas readout. Read `CLAUDE.md`
+> first for what is live in this build; use this file for how the dormant systems worked.
+
 # God's Eye View Current State
 
 Updated: August 24, 2026

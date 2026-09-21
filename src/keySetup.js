@@ -14,6 +14,8 @@
  * the chip and the dialog are removed outright.
  */
 
+import { periodKeyStatus } from './period.js';
+
 /** Chip label — pure, exported for tests. */
 export function keySetupChipLabel(status) {
   const missing = Math.max(0, (status?.total || 0) - (status?.setCount || 0));
@@ -173,7 +175,9 @@ export async function initKeySetup({ documentRef = globalThis.document, fetchImp
   let previouslyFocused = null;
 
   const render = (nextStatus) => {
-    status = nextStatus;
+    // The period build offers only the basemap and voice keys (src/period.js);
+    // the counts the chip label reads are recomputed to match.
+    status = periodKeyStatus(nextStatus);
     chipLabel.textContent = keySetupChipLabel(status);
     // Fully powered is the owner's clean screen: the chip retires. The dialog
     // stays reachable this session (and via ?setup=1) to swap or verify keys.

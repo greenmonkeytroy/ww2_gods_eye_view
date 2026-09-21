@@ -1,6 +1,12 @@
 import * as Cesium from 'cesium';
 import { StyleManager } from './ui.js';
-import { flyToAustin } from './camera.js';
+import { flyToAustin, flyToWarAtlas } from './camera.js';
+import {
+  WW2_ONLY,
+  applyPeriodMode,
+  filterRegistryForPeriod,
+  layerInPeriod,
+} from './period.js';
 import { DataLayerManager } from './data/manager.js';
 import flightsLayer from './data/flights.js';
 import militaryFlightsLayer from './data/militaryFlights.js';
@@ -35,6 +41,8 @@ import { initFirstRunExperience } from './firstRunExperience.js';
 import { initKeySetup } from './keySetup.js';
 import { loadPhotorealisticTileset } from './mapStartup.js';
 
+// Mark <html> before anything paints so the modern panels never flash (src/period.js).
+applyPeriodMode();
 initLogoGaze();
 
 /**
@@ -195,10 +203,16 @@ async function init() {
     const weatherEffects = null;
     const cockpitCloudEffects = initCockpitCloudEffects(viewer);
 
-    // If no share link state, do default fly-to Austin
+    // If no share link state, open on the default view: a wide look at the
+    // European theatre in the period build, Austin (the CCTV demo city) otherwise.
     if (!styleManager.hasShareState) {
-      loaderStatus.textContent = 'Flying to Austin, TX...';
-      flyToAustin(viewer);
+      if (WW2_ONLY) {
+        loaderStatus.textContent = 'Opening the war atlas...';
+        flyToWarAtlas(viewer);
+      } else {
+        loaderStatus.textContent = 'Flying to Austin, TX...';
+        flyToAustin(viewer);
+      }
     } else {
       loaderStatus.textContent = 'Restoring shared view...';
     }
@@ -207,25 +221,30 @@ async function init() {
     const dataManager = new DataLayerManager(viewer, {
       allowQaRegistration: import.meta.env.DEV,
     });
-    dataManager.register(flightsLayer);
-    dataManager.register(militaryFlightsLayer);
-    dataManager.register(earthquakesLayer);
-    dataManager.register(satellitesLayer);
-    dataManager.register(rocketLaunchesLayer);
-    rocketLaunchesLayer.attachDataManager(dataManager);
-    dataManager.register(trafficLayer);
-    dataManager.register(cctvLayer);
-    dataManager.register(radioLayer);
-    dataManager.register(bikeshareLayer);
-    dataManager.register(aisLiveVesselsLayer);
-    dataManager.register(militaryInstallationsLayer);
-    dataManager.register(militaryAwarenessLayer);
-    militaryAwarenessLayer.attachDataManager(dataManager);
-    for (const layer of localDataLayers) {
+    // The period build registers only the 1939-1945 layers; every modern layer
+    // module stays on disk, dormant (src/period.js).
+    const registerInPeriod = (layer) => {
+      if (!layerInPeriod(layer.id)) return false;
       dataManager.register(layer);
+      return true;
+    };
+    registerInPeriod(flightsLayer);
+    registerInPeriod(militaryFlightsLayer);
+    registerInPeriod(earthquakesLayer);
+    registerInPeriod(satellitesLayer);
+    if (registerInPeriod(rocketLaunchesLayer)) rocketLaunchesLayer.attachDataManager(dataManager);
+    registerInPeriod(trafficLayer);
+    registerInPeriod(cctvLayer);
+    registerInPeriod(radioLayer);
+    registerInPeriod(bikeshareLayer);
+    registerInPeriod(aisLiveVesselsLayer);
+    registerInPeriod(militaryInstallationsLayer);
+    if (registerInPeriod(militaryAwarenessLayer)) militaryAwarenessLayer.attachDataManager(dataManager);
+    for (const layer of localDataLayers) {
+      registerInPeriod(layer);
     }
     // Restoration starts only after the complete production registry is sealed.
-    dataManager.finalizeRegistrations(LAYER_STATE_REGISTRY);
+    dataManager.finalizeRegistrations(filterRegistryForPeriod(LAYER_STATE_REGISTRY));
     if (import.meta.env.DEV) {
       window.__gevQaRegisterLayer = (targetManager, layerModule) => {
         if (targetManager !== dataManager) throw new Error('QA layer manager mismatch');
@@ -258,6 +277,9 @@ async function init() {
       const revealFirstRun = () => {
         if (firstRunRevealed) return;
         firstRunRevealed = true;
+        // The launcher's missions (live contacts, space missions, environmental)
+        // are all modern feeds, so the period build never shows it.
+        if (WW2_ONLY) return;
         // dataManager is passed explicitly: the globe missions enable bundled
         // keyless layers through it, and reaching for styleManager._dataManager
         // would make a private field part of this feature's contract.

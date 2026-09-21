@@ -2,7 +2,7 @@
   "name": "gods-eye-view",
   "private": true,
   "version": "0.1.1",
-  "description": "A real-time intelligence console for planet Earth — photorealistic 3D globe, live aircraft/ships/satellites/earthquakes/CCTV, and hands-free voice control. Runs in a browser.",
+  "description": "A 3D globe for exploring the Second World War (1939-1945): era-correct country names across five snapshot dates, and 25 major naval battles. A fork of God's Eye View.",
   "type": "module",
   "license": "MIT",
   "author": "Bilawal Sidhu",
@@ -46,7 +46,6 @@
     "@mapbox/vector-tile": "^3.0.0",
     "cesium": "^1.124.0",
     "egm96-universal": "^1.1.1",
-    "mgrs": "^2.1.0",
     "pbf": "^5.1.2",
     "satellite.js": "^6.0.2"
   },

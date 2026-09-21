@@ -53,7 +53,35 @@ No API key is required to run the app (keyless Esri World Imagery + OSM fallback
 - Adding a CCTV source pack: the proxy only fetches server-registered frame URLs, never client-supplied ones (see `SECURITY.md`) — follow the Austin pack (`config/cctv_sources.austin.json`) as the reference shape.
 - Conventional-commit-style prefixes (`feat:`, `fix:`, `perf:`, `docs:`) are appreciated but not required.
 
-## This fork: WW2 layers
+## This fork: a 1939-1945-only build
+
+Everything above describes upstream's present-day app. **This checkout shows only the Second
+World War**, and it does so with one switch rather than by deleting code:
+
+- **`src/period.js`** — `WW2_ONLY = true`. Read by: `main.js` (only `PERIOD_LAYER_IDS` register;
+  `finalizeRegistrations` gets `filterRegistryForPeriod(LAYER_STATE_REGISTRY)`; the first-run
+  launcher is skipped; the opening view is `flyToWarAtlas`, not Austin), `dataCredits.js`
+  (`creditsForPeriod`), `keySetup.js` (`periodKeyStatus`: 3 keys, not 8), `ui.js` `setStyle`
+  (`styleInPeriod`: only `normal` and `noir`), and `style.css` (an `html.period-ww2` block that
+  hides CCTV, Context/Contacts/Radio, cockpit, detection and 3D-aircraft controls, the traffic
+  and CCTV chips, and the retro/surveillance/thermal/anime/snow style buttons).
+- The modern layer modules, proxies (`vite.config.js`), voice tools and ~2,700 tests stay on disk,
+  dormant. Flip the flag to bring the layers back. **The HUD is the exception:** `hud.js` was
+  rewritten in place (war-atlas banner, lat/lon and altitude only, no MGRS/GSD/NIIRS, no live
+  clock, no remote summary); the original is at commit `7596522`.
+- `LayerStateCoordinator._restoreSelectedState` skips layers that were never registered, so old
+  share links naming modern layers restore only what exists.
+- **Do not hide `#right-context-rail`.** At runtime `ui.js` moves the DISPLAY panel
+  (`#pp-toggles`) into it beside CCTV and CONTEXT; hide those two individually.
+- Known leftovers, deliberately not touched: the voice agent's tool schema and instructions still
+  name modern layers (they no-op safely when the layer is absent); `loadingFeedback.js` still says
+  "LIVE DATA"; `docs/CURRENT-STATE.md` and `DATA_SOURCES.md` still describe the dormant sources
+  (each carries a note saying so); upstream's README is archived at `docs/UPSTREAM-README.md`.
+- Adding a new period layer: add its id to `PERIOD_LAYER_IDS`, its credit key to
+  `PERIOD_CREDIT_KEYS`, and follow the `local-ww2-naval` / `ww2-country-labels` wiring below.
+  `src/period.test.mjs` pins every consumer of the gate, so a missed one fails a test.
+
+### WW2 layers
 
 This checkout adds two data layers beyond upstream `bilawalsidhu/gods-eye-view`
 (tracked as git remote `upstream`, no `origin` configured — see git remote -v):

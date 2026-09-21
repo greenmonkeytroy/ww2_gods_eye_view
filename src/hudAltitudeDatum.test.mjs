@@ -152,19 +152,20 @@ test('the summary ALT tag agrees with the corner readout', () => {
   );
 });
 
-test('the sensor model keeps the ellipsoidal height it was tuned against', () => {
-  // GSD/NIIRS and the STREET/CITY/METRO view band are camera-geometry math,
-  // not readouts. Re-datuming them would silently move their thresholds, so
-  // altM stays and altMslM is purely additive.
-  assert.equal(
-    has(/const gsd = Math\.max\(0\.01, altM \* 0\.000375\);/),
-    true,
-    'GSD must keep reading the raw camera height',
-  );
+test('the view band keeps the ellipsoidal height it was tuned against', () => {
+  // The STREET/CITY/METRO view band is camera-geometry math, not a readout.
+  // Re-datuming it would silently move its thresholds, so altM stays and
+  // altMslM is purely additive. (The period build dropped the GSD/NIIRS sensor
+  // model that used to sit beside it; the band is what remains.)
   assert.equal(
     has(/const band = this\._viewBand\(m\.altM\);/),
     true,
     'the view band must keep reading the raw camera height',
+  );
+  assert.equal(
+    has(/const gsd\b/),
+    false,
+    'the imagery-quality sensor model is gone from the period HUD',
   );
 });
 

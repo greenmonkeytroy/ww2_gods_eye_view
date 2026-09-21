@@ -20,6 +20,7 @@ import {
   enterCockpitWithTracking,
 } from './cockpitTracking.js';
 import { IntelHUD } from './hud.js';
+import { styleInPeriod } from './period.js';
 import { ShareLinkManager } from './sharelink.js';
 import {
   isExplicitLayerStateOrigin,
@@ -8996,6 +8997,10 @@ export class StyleManager {
     revealParameters = applyPreset,
     restore = false,
   } = {}) {
+    // The period build offers only the plain globe and film noir (src/period.js).
+    // Hotkeys, presets, share links and voice all arrive here, so this is the
+    // one place the other filters are refused.
+    if (!styleInPeriod(styleName)) return;
     if (!restore) this.shareLinkManager?.claimRestoreLane?.('visual');
     if (styleName === this.activeStyle) {
       if (revealParameters && styleName !== 'normal') this._revealStyleParameters();

@@ -47,6 +47,30 @@ export function flyToPreset(viewer, presetName, duration = 3.0) {
 }
 
 /**
+ * Open the period build on a wide, top-down look at the European theatre and
+ * the Atlantic and Mediterranean approaches, settling in from a higher start.
+ */
+export function flyToWarAtlas(viewer) {
+  const nadir = {
+    heading: Cesium.Math.toRadians(0),
+    pitch: Cesium.Math.toRadians(-90),
+    roll: 0.0,
+  };
+  viewer.camera.setView({
+    destination: Cesium.Cartesian3.fromDegrees(10, 35, 26_000_000),
+    orientation: nadir,
+  });
+  setTimeout(() => {
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(15, 42, 9_000_000),
+      orientation: nadir,
+      duration: 4.0,
+      easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
+    });
+  }, 500);
+}
+
+/**
  * Set camera to Austin on load with a cinematic fly-in.
  */
 export function flyToAustin(viewer) {

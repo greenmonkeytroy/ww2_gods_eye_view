@@ -59,8 +59,8 @@ test('southern and western hemispheres carry the right suffixes', () => {
 // The tests above all pass against a hud.js that still computes the tag inline —
 // they only exercise the helper. This pins the PRODUCTION wiring: hud.js must
 // import the helper, call it, and no longer carry the old 2,500 km branch.
-// (hud.js itself cannot be imported here: it pulls in the `mgrs` CommonJS package,
-// which Vite resolves but plain Node cannot import by named export.)
+// The period build has no catalogue of present-day landmarks, so the helper is
+// always called with no nearest point and reads out the lat/lon sector.
 test('hud.js actually composes its summary through this helper', () => {
   const source = readFileSync(new URL('./hud.js', import.meta.url), 'utf8');
   // Boolean probes, not assert.match on the whole file — a failure here should
@@ -72,9 +72,14 @@ test('hud.js actually composes its summary through this helper', () => {
     'hud.js must import composeLocalityTag from ./hudLocality.js',
   );
   assert.equal(
-    has(/const localityTag = composeLocalityTag\(nearest, m\.latDeg, m\.lonDeg\);/),
+    has(/const localityTag = composeLocalityTag\(null, m\.latDeg, m\.lonDeg\);/),
     true,
     '_composeSummary must build its locality tag through composeLocalityTag()',
+  );
+  assert.equal(
+    has(/CITY_POIS/),
+    false,
+    'the HUD must not name present-day landmarks in a 1939-1945 atlas',
   );
   assert.equal(
     has(/distKm < 2500/),

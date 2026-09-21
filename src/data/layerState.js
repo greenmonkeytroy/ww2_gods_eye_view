@@ -747,13 +747,17 @@ export class LayerStateCoordinator {
   }
 
   async _restoreSelectedState(origin) {
-    for (const entry of LAYER_STATE_REGISTRY) {
+    // The codec knows every layer, but a build may register fewer (the
+    // 1939-1945 build registers two). A layer that was never registered has
+    // nothing to restore, and asking for it would only log a phantom failure.
+    const restorable = LAYER_STATE_REGISTRY.filter((entry) => this.dataManager.layers.has(entry.id));
+    for (const entry of restorable) {
       this._restoreControllers.set(entry.id, new AbortController());
     }
     try {
       await this._waitForRestoreGate();
       const enabled = new Set(this._durableState.enabledLayerIds);
-      const settled = await Promise.allSettled(LAYER_STATE_REGISTRY.map(async (entry) => {
+      const settled = await Promise.allSettled(restorable.map(async (entry) => {
         const controller = this._restoreControllers.get(entry.id);
         const targetEnabled = enabled.has(entry.id);
         const options = layerOptionsForRestore(this._durableState, entry.id);
@@ -793,7 +797,7 @@ export class LayerStateCoordinator {
       }));
       this.lastRestoreResults = settled.map((result, index) => {
         if (result.status === 'fulfilled') return result.value;
-        const entry = LAYER_STATE_REGISTRY[index];
+        const entry = restorable[index];
         return {
           layerId: entry.id,
           targetEnabled: enabled.has(entry.id),

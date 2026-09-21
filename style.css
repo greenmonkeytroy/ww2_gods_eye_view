@@ -9520,3 +9520,31 @@ body.scene-playback-mode #key-setup {
   border-color: rgba(255, 170, 150, 0.65);
   outline: none;
 }
+
+/* ==========================================================================
+   1939-1945 period build (src/period.js)
+
+   Hides every control that belongs to a modern data feed or a modern look.
+   The elements stay in the DOM so the dormant modules that look them up keep
+   working; flipping WW2_ONLY off removes the `period-ww2` class and the
+   original interface returns untouched.
+   ========================================================================== */
+/* #right-context-rail itself stays: at runtime ui.js moves the DISPLAY panel
+   (#pp-toggles) into it beside CCTV and CONTEXT, and only DISPLAY is kept. */
+html.period-ww2 #cctv-panel,
+html.period-ww2 #cctv-sync-chip,
+html.period-ww2 #traffic-sync-chip,
+html.period-ww2 #global-context-panel,
+html.period-ww2 #radio-panel,
+html.period-ww2 #cockpit-hud,
+html.period-ww2 #view-switcher,
+html.period-ww2 #first-run-launcher,
+html.period-ww2 .style-btn[data-style="retro"],
+html.period-ww2 .style-btn[data-style="surveillance"],
+html.period-ww2 .style-btn[data-style="thermal"],
+html.period-ww2 .style-btn[data-style="anime"],
+html.period-ww2 .style-btn[data-style="snow"],
+html.period-ww2 .pp-toggle-group:has(#detection-toggle),
+html.period-ww2 .pp-toggle-group:has(#models3d-toggle) {
+  display: none !important;
+}
