@@ -6,6 +6,13 @@
  * presentation values.
  */
 
+import { uiFontFamily } from '../period.js';
+
+// Canvas text cannot read a CSS variable, so the period build's type is chosen
+// here (src/period.js). Weights map onto Libre Baskerville's 400 and 700 faces.
+const MONO = uiFontFamily('"JetBrains Mono", monospace');
+const DETECTION_MONO = uiFontFamily('JetBrains Mono, monospace');
+
 /** Shared visual tokens used by every world-overlay source. */
 export const WORLD_OVERLAY_STYLE = Object.freeze({
   background: 'rgba(4, 12, 16, 0.82)',
@@ -16,13 +23,13 @@ export const WORLD_OVERLAY_STYLE = Object.freeze({
   detail: 'rgba(147, 161, 173, 0.92)',
   leader: 'rgba(147, 213, 228, 0.58)',
   accent: '#6be8ff',
-  fontLabel: '500 10px "JetBrains Mono", monospace',
-  fontTrack: '600 10px "JetBrains Mono", monospace',
-  fontTitle: '600 12px "JetBrains Mono", monospace',
-  fontDetail: '500 10.5px "JetBrains Mono", monospace',
-  fontSelected: '600 13px "JetBrains Mono", monospace',
-  fontTrackedTitle: '600 13px "JetBrains Mono", monospace',
-  fontTrackedDetail: '500 11px "JetBrains Mono", monospace',
+  fontLabel: `500 10px ${MONO}`,
+  fontTrack: `600 10px ${MONO}`,
+  fontTitle: `600 12px ${MONO}`,
+  fontDetail: `500 10.5px ${MONO}`,
+  fontSelected: `600 13px ${MONO}`,
+  fontTrackedTitle: `600 13px ${MONO}`,
+  fontTrackedDetail: `500 11px ${MONO}`,
   radius: 4,
 });
 
@@ -33,7 +40,7 @@ export const CCTV_THUMBNAIL_STYLE = Object.freeze({
   titleChars: 15,
   background: WORLD_OVERLAY_STYLE.background,
   titleColor: 'rgba(210, 236, 244, 0.95)',
-  titleFont: '600 10px "JetBrains Mono", monospace',
+  titleFont: `600 10px ${MONO}`,
   accent: 'rgb(107, 232, 255)',
   leader: 'rgba(107, 232, 255, 0.6)',
   rule: 'rgba(107, 232, 255, 0.95)',
@@ -43,8 +50,8 @@ export const CCTV_THUMBNAIL_STYLE = Object.freeze({
 
 /** Detection fonts and compositor glow retained exactly from the source renderer. */
 export const DETECTION_STYLE = Object.freeze({
-  font: '10px JetBrains Mono, monospace',
-  microFont: '9px JetBrains Mono, monospace',
+  font: `10px ${DETECTION_MONO}`,
+  microFont: `9px ${DETECTION_MONO}`,
   glowPx: 3,
 });
 

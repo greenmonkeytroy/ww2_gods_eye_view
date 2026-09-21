@@ -17,6 +17,7 @@ plumbing, and replaces the present-day content with 1939–1945 data.
 | **WW2 Country Labels** | 153 label points with era-correct names and a short political status. Five snapshot chips on the layer row: **Aug 1939, Jun 1941, Nov 1942, Jun 1944, May 1945**. |
 | **WW2 Naval Battles** | 25 major naval engagements, 1939–1945, across the Atlantic, Mediterranean, Arctic and Pacific. |
 
+The whole interface is set in Baskerville (the web font is Libre Baskerville) for a printed-atlas look.
 Around them: a war-atlas HUD (position and altitude only), Normal and Noir visual styles, scope,
 bloom and sharpen controls, share links that remember the era, and optional voice control.
 

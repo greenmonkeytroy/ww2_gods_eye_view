@@ -73,6 +73,15 @@ World War**, and it does so with one switch rather than by deleting code:
   share links naming modern layers restore only what exists.
 - **Do not hide `#right-context-rail`.** At runtime `ui.js` moves the DISPLAY panel
   (`#pp-toggles`) into it beside CCTV and CONTEXT; hide those two individually.
+- **Type is Baskerville.** `style.css` defines the whole interface through `--font-mono` and `--font-sans`;
+  the `html.period-ww2` block overrides both with `PERIOD_FONT_FAMILY` (Libre Baskerville from Google Fonts,
+  then system Baskerville, then Times). Text the app paints itself (canvas cards and labels in
+  `worldOverlayTokens.js`, the annotation renderers) cannot read a CSS variable and goes through
+  `uiFontFamily()`. `loadPeriodFonts()` requests the faces up front because canvas text never triggers a
+  web-font download, and `main.js` repaints once they arrive. To try another face (say Baskervville), change
+  `PERIOD_FONT_FAMILY`, `PERIOD_FONT_FACES`, the `<link>` in `index.html` and the `html.period-ww2` block;
+  a test fails until all four agree. Libre Baskerville has only 400 and 700, so the UI's 500/600 weights land
+  on regular and bold.
 - Known leftovers, deliberately not touched: the voice agent's tool schema and instructions still
   name modern layers (they no-op safely when the layer is absent); `loadingFeedback.js` still says
   "LIVE DATA"; `docs/CURRENT-STATE.md` and `DATA_SOURCES.md` still describe the dormant sources

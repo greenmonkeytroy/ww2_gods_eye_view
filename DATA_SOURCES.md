@@ -39,6 +39,7 @@ How to read this:
 | **GBFS (Lyft / BCycle)** | Bikeshare availability | Per-feed (attribution-only) | Credit the operator (e.g. Austin BCycle) + its `license_url` |
 | **Radio Browser** | Geolocated internet-radio station directory and station-level tags | Public-domain directory data under PDDL 1.0; individual broadcaster stream terms apply | "Radio Browser" plus a link to the selected broadcaster |
 | **Re:Earth Terrain** (Mapterhorn) | Terrain (keyless globe stacks — OSM etc. — + `/api/terrain/heights` ellipsoidal-height lookups) | Terrain mesh: CC BY 4.0; geoid: EGM2008 (NGA, public domain) | "Terrain (keyless globe stacks): Re:Earth Terrain / Mapterhorn (CC BY 4.0) / EGM2008 (NGA)" |
+| **Google Fonts — Libre Baskerville** | The interface typeface in the 1939-1945 build (a Baskerville revival by Impallari Type) | [SIL Open Font License 1.1](https://openfontlicense.org): free to use, including commercially; fetched from Google Fonts at runtime, not bundled here | None required (courtesy: "Libre Baskerville, Impallari Type") |
 
 ### Notes on the live sources
 

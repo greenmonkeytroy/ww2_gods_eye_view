@@ -9548,3 +9548,12 @@ html.period-ww2 .pp-toggle-group:has(#detection-toggle),
 html.period-ww2 .pp-toggle-group:has(#models3d-toggle) {
   display: none !important;
 }
+
+/* Type for the period build: Baskerville, for a printed-atlas look. Every text
+   rule in this file reads --font-mono or --font-sans, so overriding the two
+   variables retypes the whole interface; icon fonts are unaffected. Keep these
+   stacks identical to PERIOD_FONT_FAMILY in src/period.js (a test checks). */
+html.period-ww2 {
+  --font-mono: "Libre Baskerville", Baskerville, "Baskerville Old Face", "Times New Roman", serif;
+  --font-sans: "Libre Baskerville", Baskerville, "Baskerville Old Face", "Times New Roman", serif;
+}

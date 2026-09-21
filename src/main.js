@@ -6,6 +6,7 @@ import {
   applyPeriodMode,
   filterRegistryForPeriod,
   layerInPeriod,
+  loadPeriodFonts,
 } from './period.js';
 import { DataLayerManager } from './data/manager.js';
 import flightsLayer from './data/flights.js';
@@ -43,6 +44,8 @@ import { loadPhotorealisticTileset } from './mapStartup.js';
 
 // Mark <html> before anything paints so the modern panels never flash (src/period.js).
 applyPeriodMode();
+// Start fetching the period type now; canvas labels cannot trigger the download themselves.
+const periodFontsLoaded = loadPeriodFonts();
 initLogoGaze();
 
 /**
@@ -299,6 +302,9 @@ async function init() {
     // nothing animates per frame. Installed AFTER every module above has had
     // its chance to register pre-install holds. (perf wave 2)
     installRenderGovernor(viewer);
+    // Repaint once the period type has arrived: the canvas labels drew in the
+    // fallback face first, and a parked camera would not repaint on its own.
+    void periodFontsLoaded.then(() => governorRequestRender('period-fonts'));
 
     // The explicit scope mask replaces the emergent six-pass artifact —
     // see src/scopeMask.js. Installed before the UI so the DISPLAY-rail

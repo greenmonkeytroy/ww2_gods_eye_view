@@ -10,10 +10,17 @@ import {
   REGISTERED_LAYER_IDS,
 } from './data/layerState.js';
 import { createWw2CountryLabelsLayer } from './data/ww2CountryLabels.js';
+import {
+  CCTV_THUMBNAIL_STYLE,
+  DETECTION_STYLE,
+  WORLD_OVERLAY_STYLE,
+} from './overlays/worldOverlayTokens.js';
 import { KEY_SETUP_KEYS } from './keySetupCore.mjs';
 import {
   PERIOD_CLASS,
   PERIOD_CREDIT_KEYS,
+  PERIOD_FONT_FACES,
+  PERIOD_FONT_FAMILY,
   PERIOD_KEY_IDS,
   PERIOD_LAYER_IDS,
   PERIOD_STYLE_IDS,
@@ -22,8 +29,10 @@ import {
   creditsForPeriod,
   filterRegistryForPeriod,
   layerInPeriod,
+  loadPeriodFonts,
   periodKeyStatus,
   styleInPeriod,
+  uiFontFamily,
 } from './period.js';
 
 const read = (relative) => fs.readFileSync(new URL(relative, import.meta.url), 'utf8');
@@ -166,6 +175,80 @@ test('the stylesheet hides the modern panels only under the period class', () =>
   assert.ok(!/^#cctv-panel/m.test(block), 'no unscoped hide rule leaks into the modern build');
 });
 
+// ---- type -----------------------------------------------------------------
+
+test('the period type is Baskerville with sensible fallbacks', () => {
+  assert.match(PERIOD_FONT_FAMILY, /^"Libre Baskerville", Baskerville, /);
+  assert.match(PERIOD_FONT_FAMILY, /"Baskerville Old Face"/);
+  assert.match(PERIOD_FONT_FAMILY, /serif$/);
+  assert.ok(PERIOD_FONT_FACES.every((face) => face.includes('"Libre Baskerville"')));
+  assert.equal(PERIOD_FONT_FACES.length, 3, 'regular, bold and italic');
+});
+
+test('uiFontFamily swaps only in the period build', () => {
+  const original = '"JetBrains Mono", monospace';
+  assert.equal(uiFontFamily(original), PERIOD_FONT_FAMILY);
+  assert.equal(uiFontFamily(original, { enforce: false }), original);
+});
+
+test('the stylesheet retypes the interface through the two font variables, inside the period block only', () => {
+  const css = read('../style.css');
+  const start = css.indexOf('1939-1945 period build');
+  assert.ok(start > 0);
+  // Upstream's own rules never mention the period face, so flipping the flag
+  // off (which drops the html.period-ww2 class) restores JetBrains Mono and Inter.
+  assert.ok(css.indexOf('Libre Baskerville') > start, 'the period type is defined only after the period marker');
+  const rule = css.match(/html\.period-ww2 \{([^}]*)\}/);
+  assert.ok(rule, 'there is an html.period-ww2 variable block');
+  assert.ok(rule[1].includes(`--font-mono: ${PERIOD_FONT_FAMILY};`), '--font-mono matches PERIOD_FONT_FAMILY');
+  assert.ok(rule[1].includes(`--font-sans: ${PERIOD_FONT_FAMILY};`), '--font-sans matches PERIOD_FONT_FAMILY');
+  assert.doesNotMatch(rule[1], /(^|[;\s])font-family:/, 'variables only, so icon fonts are untouched');
+});
+
+test('the page requests the web font in every face the app draws', () => {
+  const html = read('../index.html');
+  assert.match(html, /family=Libre\+Baskerville:ital,wght@0,400;0,700;1,400/);
+  assert.match(html, /family=Material\+Symbols\+Outlined/, 'the icon font is still loaded');
+});
+
+test('canvas cards and labels are drawn in the period type', () => {
+  const styles = {
+    ...WORLD_OVERLAY_STYLE,
+    cctvTitle: CCTV_THUMBNAIL_STYLE.titleFont,
+    detection: DETECTION_STYLE.font,
+    detectionMicro: DETECTION_STYLE.microFont,
+  };
+  const fonts = Object.entries(styles).filter(([key]) => /font|Font|detection|cctvTitle/.test(key));
+  assert.ok(fonts.length >= 10, 'found the font tokens');
+  for (const [key, value] of fonts) {
+    assert.ok(String(value).endsWith(PERIOD_FONT_FAMILY), `${key} uses the period stack: ${value}`);
+    assert.doesNotMatch(String(value), /JetBrains|Inter/, `${key} keeps no upstream face`);
+  }
+});
+
+test('the annotation renderers take their type from the gate', () => {
+  assert.match(read('./annotations/screenAnnotationRenderer.js'), /uiFontFamily\('"JetBrains Mono"/);
+  assert.match(read('./annotations/worldAnnotationRenderer.js'), /uiFontFamily\('"Inter"/);
+});
+
+test('loadPeriodFonts requests every face, tolerates a failing one, and is inert with the flag off', async () => {
+  const requested = [];
+  const fonts = {
+    load(face) {
+      requested.push(face);
+      return face.startsWith('italic') ? Promise.reject(new Error('offline')) : Promise.resolve([{}]);
+    },
+  };
+  const results = await loadPeriodFonts(fonts);
+  assert.deepEqual(requested, [...PERIOD_FONT_FACES]);
+  assert.equal(results.length, PERIOD_FONT_FACES.length, 'a failed face does not reject the whole load');
+
+  requested.length = 0;
+  assert.deepEqual(await loadPeriodFonts(fonts, { enforce: false }), []);
+  assert.equal(requested.length, 0);
+  assert.deepEqual(await loadPeriodFonts(null), [], 'no font set (non-browser host) is fine');
+});
+
 // ---- wiring guards --------------------------------------------------------
 // The gate only works if every consumer reads it. These pin the call sites.
 
@@ -176,6 +259,8 @@ test('main.js registers layers and seals the codec through the gate', () => {
   assert.match(main, /finalizeRegistrations\(filterRegistryForPeriod\(LAYER_STATE_REGISTRY\)\)/);
   assert.doesNotMatch(main, /dataManager\.register\(flightsLayer\)/, 'no layer bypasses the gate');
   assert.match(main, /if \(WW2_ONLY\) return;/, 'the first-run launcher is skipped');
+  assert.match(main, /const periodFontsLoaded = loadPeriodFonts\(\);/, 'the period type is requested at startup');
+  assert.match(main, /governorRequestRender\('period-fonts'\)/, 'the map repaints once the type has arrived');
 });
 
 test('credits, keys and styles all read the gate', () => {

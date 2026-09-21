@@ -18,7 +18,10 @@
  *  - keySetup.js      which provider keys the POWER UP dialog offers
  *  - ui.js            which visual styles can be selected
  *  - style.css        via the `period-ww2` class on <html>, which hides the
- *                     modern panels, chips and controls
+ *                     modern panels, chips and controls and swaps the type to
+ *                     Baskerville
+ *  - worldOverlayTokens.js, the annotation renderers
+ *                     canvas and injected text, through `uiFontFamily`
  */
 
 export const WW2_ONLY = true;
@@ -53,6 +56,50 @@ export const PERIOD_CREDIT_KEYS = Object.freeze([
   'ww2-naval',
   'ww2-country-labels',
 ]);
+
+/**
+ * Type for the period build: Baskerville, for a printed-atlas look. Baskerville
+ * itself is not a web font, so the web font is Libre Baskerville (Google Fonts,
+ * SIL OFL), with the system Baskerville faces and Times as offline fallbacks.
+ * Quoted with double quotes so the same string works in a canvas `font` value,
+ * injected CSS and style.css (where it is the value of `--font-mono` and
+ * `--font-sans` under `html.period-ww2`; a test keeps the two in step).
+ */
+export const PERIOD_FONT_FAMILY = '"Libre Baskerville", Baskerville, "Baskerville Old Face", "Times New Roman", serif';
+
+/** The faces the period build draws, requested up front so canvas text can use them. */
+export const PERIOD_FONT_FACES = Object.freeze([
+  '400 12px "Libre Baskerville"',
+  '700 12px "Libre Baskerville"',
+  'italic 400 12px "Libre Baskerville"',
+]);
+
+/**
+ * The font family for text the app paints itself (canvas cards and labels,
+ * injected annotation CSS), which cannot read a CSS variable.
+ * @param {string} originalFamily The upstream family stack.
+ * @param {{enforce?: boolean}} [options]
+ * @returns {string} The period stack in the period build, else the original.
+ */
+export function uiFontFamily(originalFamily, { enforce = WW2_ONLY } = {}) {
+  return enforce ? PERIOD_FONT_FAMILY : originalFamily;
+}
+
+/**
+ * Ask the browser for the period faces. Canvas text never triggers a web-font
+ * download on its own, so without this the map labels would stay in the
+ * fallback face until some DOM text happened to use each weight.
+ * @param {{load?: function(string): Promise<unknown>}|null} [fonts] Font set; defaults to `document.fonts`.
+ * @param {{enforce?: boolean}} [options]
+ * @returns {Promise<unknown[]>} Settles once every face has loaded or failed.
+ */
+export function loadPeriodFonts(
+  fonts = typeof document === 'undefined' ? null : document.fonts,
+  { enforce = WW2_ONLY } = {},
+) {
+  if (!enforce || typeof fonts?.load !== 'function') return Promise.resolve([]);
+  return Promise.all(PERIOD_FONT_FACES.map((face) => Promise.resolve(fonts.load(face)).catch(() => [])));
+}
 
 /**
  * @param {string} layerId Data layer id.
